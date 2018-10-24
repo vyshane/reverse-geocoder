@@ -4,10 +4,13 @@ scalaVersion := "2.12.7"
 enablePlugins(JavaAppPackaging)
 
 resolvers += Resolver.bintrayRepo("beyondthelines", "maven")
+resolvers += Resolver.bintrayRepo("vyshane", "maven")
 
 libraryDependencies ++= Seq(
   // Configuration
   "com.github.pureconfig" %% "pureconfig" % "0.9.2",
+  // Dependency Injection
+  "org.wvlet.airframe" %% "airframe" % "0.69",
   // Effects
   "io.monix" %% "monix" % "2.3.3",
   // gRPC and Protocol Buffers
@@ -16,7 +19,9 @@ libraryDependencies ++= Seq(
   "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion,
   "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion,
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",
-  "beyondthelines" %% "grpcmonixruntime" % "0.0.7"
+  "beyondthelines" %% "grpcmonixruntime" % "0.0.7",
+  // Monitoring
+  "mu.node" %% "healthttpd" % "0.1.0"
 )
 
 // Protobuf/gRPC code generation
