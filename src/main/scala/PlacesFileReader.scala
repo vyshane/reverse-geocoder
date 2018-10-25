@@ -28,11 +28,6 @@ object PlacesFileReader {
       .map(place => KDTreeMap.fromSeq(place))
   }
 
-  private def toLines(char: String, nextChar: String): String = {
-    if (nextChar == "\n") char
-    else char + nextChar
-  }
-
   private def toPlace(line: String): Place = {
     val columns = line.split("\t")
 
