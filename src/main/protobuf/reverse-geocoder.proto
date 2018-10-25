@@ -21,9 +21,6 @@ message ReverseGeocodeResponse {
 message Place {
     string name = 1;
     repeated string alternate_names = 2;
-    string admin1 = 3;
-    string admin2 = 4;
-    string admin3 = 5;
     string country_code = 6;
     double longitude = 7;
     double latitude = 8;

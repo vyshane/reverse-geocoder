@@ -33,9 +33,6 @@ object PlacesFileReader {
 
     val place = Place(
       name = columns(1),
-      admin1 = columns(10),
-      admin2 = columns(11),
-      admin3 = columns(12),
       countryCode = columns(8),
       longitude = columns(5).toDouble,
       latitude = columns(4).toDouble,
