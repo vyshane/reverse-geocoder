@@ -1,0 +1,33 @@
+// Copyright 2018 Vy-Shane Xie
+
+syntax = "proto3";
+
+package mu.node.reversegeocoder;
+
+service ReverseGeocoder {
+    rpc ReverseGeocode (ReverseGeocodeRequest) returns (ReverseGeocodeResponse) {};
+}
+
+message ReverseGeocodeRequest {
+    double longitude = 1;
+    double latitude = 2;
+}
+
+message ReverseGeocodeResponse {
+    // Empty if none found
+    Place place = 1;
+}
+
+message Place {
+    string name = 1;
+    repeated string alternate_names = 2;
+    string admin1 = 3;
+    string admin2 = 4;
+    string admin3 = 5;
+    string country_code = 6;
+    double longitude = 7;
+    double latitude = 8;
+    uint32 elevation_meters = 9;
+    string timezone = 10;
+    uint64 population = 11;
+}
