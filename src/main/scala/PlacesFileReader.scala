@@ -23,7 +23,9 @@ object PlacesFileReader {
     Observable
       .fromLinesReader(reader)
       .map(toPlace)
-      .foldLeftL(KDTreeMap.empty: KDTreeMap[Location, Place])(addPlace)
+      .map(p => (p.longitude, p.latitude) -> p)
+      .toListL
+      .map(place => KDTreeMap.fromSeq(place))
   }
 
   private def toLines(char: String, nextChar: String): String = {
@@ -51,10 +53,5 @@ object PlacesFileReader {
       place.copy(alternateNames = columns(3).split(","))
     else
       place
-  }
-
-  private def addPlace(map: KDTreeMap[Location, Place], place: Place): KDTreeMap[Location, Place] = {
-//    logger.info(place.toProtoString)
-    map + ((place.longitude, place.latitude) -> place)
   }
 }
