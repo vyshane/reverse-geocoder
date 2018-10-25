@@ -9,8 +9,8 @@ service ReverseGeocoder {
 }
 
 message ReverseGeocodeRequest {
-    double longitude = 1;
-    double latitude = 2;
+    double latitude = 1;
+    double longitude = 2;
 }
 
 message ReverseGeocodeResponse {

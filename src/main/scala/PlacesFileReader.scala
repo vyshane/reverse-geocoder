@@ -23,7 +23,7 @@ object PlacesFileReader {
     Observable
       .fromLinesReader(reader)
       .map(toPlace)
-      .map(p => (p.longitude, p.latitude) -> p)
+      .map(p => (p.latitude, p.longitude) -> p)
       .toListL
       .map(place => KDTreeMap.fromSeq(place))
   }
