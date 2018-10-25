@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   "org.wvlet.airframe" %% "airframe" % "0.69",
   // Effects
   "io.monix" %% "monix" % "2.3.3",
+  "io.monix" %% "monix-nio" % "0.0.3",
   // gRPC and Protocol Buffers
   "io.grpc" % "grpc-netty-shaded" % "1.15.1",
   "io.grpc" % "grpc-stub" % "1.15.1",
@@ -21,7 +22,12 @@ libraryDependencies ++= Seq(
   "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",
   "beyondthelines" %% "grpcmonixruntime" % "0.0.7",
   // Monitoring
-  "mu.node" %% "healthttpd" % "0.1.0"
+  "mu.node" %% "healthttpd" % "0.1.0",
+  // K-d Tree
+  "com.thesamet" %% "kdtree" % "1.0.5",
+  // Logging
+  "ch.qos.logback" % "logback-classic" % "1.2.3",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0"
 )
 
 // Protobuf/gRPC code generation
