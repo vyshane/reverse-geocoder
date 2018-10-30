@@ -2,26 +2,18 @@
 
 package mu.node.reversegeocoder
 
-import java.io.{BufferedReader, FileInputStream, InputStreamReader}
-
 import com.thesamet.spatial.KDTreeMap
 import com.typesafe.scalalogging.Logger
 import monix.eval.Task
-import monix.reactive.Observable
 
 import scala.util.Try
 
-object PlacesFileReader {
+class PlacesFileReader(loader: LinesFileLoader) {
 
   private val logger = Logger[this.type]
-  type Location = (Double, Double)
 
-  def load(filePath: String): Task[KDTreeMap[Location, Place]] = {
-    implicit val ctx = monix.execution.Scheduler.Implicits.global
-    val reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"))
-
-    Observable
-      .fromLinesReader(reader)
+  def read(filePath: String): Task[KDTreeMap[Location, Place]] = {
+    loader(filePath)
       .map(toPlace)
       .map(p => (p.latitude, p.longitude) -> p)
       .toListL
