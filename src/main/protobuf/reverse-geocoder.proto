@@ -22,8 +22,8 @@ message Place {
     string name = 1;
     repeated string alternate_names = 2;
     string country_code = 6;
-    double longitude = 7;
-    double latitude = 8;
+    double latitude = 7;
+    double longitude = 8;
     uint32 elevation_meters = 9;
     string timezone = 10;
     uint64 population = 11;

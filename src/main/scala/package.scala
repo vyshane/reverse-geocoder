@@ -4,6 +4,8 @@ package mu.node
 import monix.reactive.Observable
 
 package object reversegeocoder {
-  type Location = (Double, Double)
+  type Latitude = Double
+  type Longitude = Double
+  type Location = (Latitude, Longitude)
   type LinesFileLoader = String => Observable[String]
 }

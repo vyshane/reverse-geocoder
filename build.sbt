@@ -10,7 +10,7 @@ libraryDependencies ++= Seq(
   // Configuration
   "com.github.pureconfig" %% "pureconfig" % "0.9.2",
   // Dependency Injection
-  "org.wvlet.airframe" %% "airframe" % "0.69",
+  "org.wvlet.airframe" %% "airframe" % "0.70",
   // Effects
   "io.monix" %% "monix" % "2.3.3",
   "io.monix" %% "monix-nio" % "0.0.3",

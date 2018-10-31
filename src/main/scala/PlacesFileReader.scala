@@ -3,14 +3,11 @@
 package mu.node.reversegeocoder
 
 import com.thesamet.spatial.KDTreeMap
-import com.typesafe.scalalogging.Logger
 import monix.eval.Task
 
 import scala.util.Try
 
 class PlacesFileReader(loader: LinesFileLoader) {
-
-  private val logger = Logger[this.type]
 
   def read(filePath: String): Task[KDTreeMap[Location, Place]] = {
     loader(filePath)
@@ -26,8 +23,8 @@ class PlacesFileReader(loader: LinesFileLoader) {
     val place = Place(
       name = columns(1),
       countryCode = columns(8),
-      longitude = columns(5).toDouble,
       latitude = columns(4).toDouble,
+      longitude = columns(5).toDouble,
       elevationMeters = Try(columns(15).toInt).getOrElse(0),
       timezone = columns(17),
       population = Try(columns(14).toLong).getOrElse(0)

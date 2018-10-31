@@ -2,32 +2,32 @@
 
 package mu.node.reversegeocoder
 
-import com.typesafe.scalalogging.Logger
+import com.typesafe.scalalogging.LazyLogging
 import io.grpc.netty.NettyServerBuilder
 import mu.node.healthttpd.Healthttpd
 import wvlet.airframe._
 
-trait Application {
-  private val logger = Logger[this.type]
+trait Application extends LazyLogging {
   private val config = bind[Config]
   private val healthttpd = bind[Healthttpd]
   private val reverseGeocoderService = bind[ReverseGeocoderService]
 
   def run: Unit = {
     healthttpd.startAndIndicateNotReady()
+    logger.info("Starting gRPC server")
 
-    val server = NettyServerBuilder
+    val grpcServer = NettyServerBuilder
       .forPort(config.grpcPort)
       .addService(ReverseGeocoderGrpcMonix.bindService(reverseGeocoderService, monix.execution.Scheduler.global))
       .build()
       .start()
 
     sys.ShutdownHookThread {
-      server.shutdown()
+      grpcServer.shutdown()
       healthttpd.stop()
     }
 
     healthttpd.indicateReady()
-    server.awaitTermination()
+    grpcServer.awaitTermination()
   }
 }
