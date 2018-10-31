@@ -7,10 +7,10 @@ import monix.eval.Task
 
 import scala.util.Try
 
-class PlacesFileReader(loader: LinesFileLoader) {
+class PlacesLoader(readFile: LinesFileReader) {
 
-  def read(filePath: String): Task[KDTreeMap[Location, Place]] = {
-    loader(filePath)
+  def load(): Task[KDTreeMap[Location, Place]] = {
+    readFile()
       .map(toPlace)
       .map(p => (p.latitude, p.longitude) -> p)
       .toListL

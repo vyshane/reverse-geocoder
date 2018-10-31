@@ -7,5 +7,5 @@ package object reversegeocoder {
   type Latitude = Double
   type Longitude = Double
   type Location = (Latitude, Longitude)
-  type LinesFileLoader = String => Observable[String]
+  type LinesFileReader = () => Observable[String]
 }

@@ -5,15 +5,15 @@ syntax = "proto3";
 package mu.node.reversegeocoder;
 
 service ReverseGeocoder {
-    rpc ReverseGeocode (ReverseGeocodeRequest) returns (ReverseGeocodeResponse) {};
+    rpc ReverseGeocodeLocation (ReverseGeocodeLocationRequest) returns (ReverseGeocodeLocationResponse) {};
 }
 
-message ReverseGeocodeRequest {
+message ReverseGeocodeLocationRequest {
     double latitude = 1;
     double longitude = 2;
 }
 
-message ReverseGeocodeResponse {
+message ReverseGeocodeLocationResponse {
     // Empty if none found
     Place place = 1;
 }

@@ -15,16 +15,18 @@ object Main extends App with LazyLogging {
   override def main(args: Array[String]): Unit = {
     val config = loadConfigOrThrow[Config]
 
-    val linesFileLoader: LinesFileLoader = (filePath) => {
-      logger.info(s"Loading places from ${filePath}")
-      val reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8"))
+    val fileReader: LinesFileReader = () => {
+      logger.info(s"Loading places from ${config.placesFilePath}")
+      val reader = new BufferedReader(
+        new InputStreamReader(new FileInputStream(config.placesFilePath), "UTF-8")
+      )
       Observable.fromLinesReader(reader)
     }
 
     newDesign
       .bind[Config].toInstance(config)
       .bind[Healthttpd].toInstance(Healthttpd(config.statusPort))
-      .bind[LinesFileLoader].toInstance(linesFileLoader)
+      .bind[LinesFileReader].toInstance(fileReader)
       .noLifeCycleLogging
       .withSession(_.build[Application].run)
   }
