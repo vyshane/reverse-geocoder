@@ -20,11 +20,10 @@ message ReverseGeocodeLocationResponse {
 
 message Place {
     string name = 1;
-    repeated string alternate_names = 2;
-    string country_code = 6;
-    double latitude = 7;
-    double longitude = 8;
-    uint32 elevation_meters = 9;
-    string timezone = 10;
-    uint64 population = 11;
+    string country_code = 2;
+    double latitude = 3;
+    double longitude = 4;
+    uint32 elevation_meters = 5;
+    string timezone = 6;
+    uint64 population = 7;
 }

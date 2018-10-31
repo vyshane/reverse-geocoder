@@ -21,7 +21,7 @@ class PlacesLoader(readFile: LinesFileReader) {
   private def toPlace(line: String): Place = {
     val columns = line.split("\t")
 
-    val place = Place(
+    Place(
       name = columns(1),
       countryCode = columns(8),
       latitude = columns(4).toDouble,
@@ -30,10 +30,5 @@ class PlacesLoader(readFile: LinesFileReader) {
       timezone = columns(17),
       population = Try(columns(14).toLong).getOrElse(0)
     )
-
-    if (!columns(3).trim.isEmpty)
-      place.copy(alternateNames = columns(3).split(","))
-    else
-      place
   }
 }
