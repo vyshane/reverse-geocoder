@@ -7,6 +7,7 @@ import monix.eval.Task
 
 import scala.util.Try
 
+// Load places into an in-memory k-d tree for location-based lookups
 class PlacesLoader(readFile: LinesFileReader) {
 
   def load(): Task[KDTreeMap[Location, Place]] = {
