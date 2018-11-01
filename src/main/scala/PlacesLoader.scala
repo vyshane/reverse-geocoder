@@ -13,22 +13,25 @@ class PlacesLoader(readFile: LinesFileReader) {
   def load(): Task[KDTreeMap[Location, Place]] = {
     readFile()
       .map(toPlace)
+      .filter(_.isSuccess)
+      .map(_.get)
       .map(p => (p.latitude, p.longitude) -> p)
       .toListL
       .map(place => KDTreeMap.fromSeq(place))
   }
 
-  private def toPlace(line: String): Place = {
+  private def toPlace(line: String): Try[Place] = {
     val columns = line.split("\t")
-
-    Place(
-      name = columns(1),
-      countryCode = columns(8),
-      latitude = columns(4).toDouble,
-      longitude = columns(5).toDouble,
-      elevationMeters = Try(columns(15).toInt).getOrElse(0),
-      timezone = columns(17),
-      population = Try(columns(14).toLong).getOrElse(0)
-    )
+    Try {
+      Place(
+        name = columns(1),
+        countryCode = columns(8),
+        latitude = columns(4).toDouble,
+        longitude = columns(5).toDouble,
+        elevationMeters = Try(columns(15).toInt).getOrElse(0),
+        timezone = columns(17),
+        population = Try(columns(14).toLong).getOrElse(0)
+      )
+    }
   }
 }
