@@ -17,7 +17,7 @@ class PlacesLoader(readFile: LinesFileReader) {
       .map(_.get)
       .map(p => (p.latitude, p.longitude) -> p)
       .toListL
-      .map(place => KDTreeMap.fromSeq(place))
+      .map(places => KDTreeMap.fromSeq(places))
   }
 
   private def toPlace(line: String): Try[Place] = {
