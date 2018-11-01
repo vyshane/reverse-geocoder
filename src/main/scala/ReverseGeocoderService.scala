@@ -2,17 +2,11 @@
 
 package mu.node.reversegeocoder
 
+import com.thesamet.spatial.KDTreeMap
 import monix.eval.Task
 import mu.node.reversegeocoder.ReverseGeocoderGrpcMonix.ReverseGeocoder
-import monix.execution.Scheduler.Implicits.global
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
-
-class ReverseGeocoderService(placesLoader: PlacesLoader) extends ReverseGeocoder {
-
-  // Preload since reading from disk is slow
-  private val places = Await.result(placesLoader.load().runAsync, 1 minute)
+class ReverseGeocoderService(places: KDTreeMap[Location, Place]) extends ReverseGeocoder {
 
   // val belmont = places.findNearest((-31.9450, 115.9270), 1)
   // val nyc = places.findNearest((40.7128, -74.0060), 1)

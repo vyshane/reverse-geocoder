@@ -27,7 +27,11 @@ libraryDependencies ++= Seq(
   "com.thesamet" %% "kdtree" % "1.0.5",
   // Logging
   "ch.qos.logback" % "logback-classic" % "1.2.3",
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0"
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",
+  // Testing
+  "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+  "org.scalamock" %% "scalamock" % "4.1.0" % Test,
+  "com.github.javafaker" % "javafaker" % "0.16" % Test
 )
 
 // Protobuf/gRPC code generation
