@@ -50,7 +50,7 @@ docker run vyshane/reverse-geocoder
 
 By default the application will serve the reverse geocoder gRPC service over port 8080.
 
-It will also report health and readiness via HTTP. At /health and /readiness respectively, on port 3401.
+It will also report health and readiness via HTTP, at /health and /readiness respectively, on port 3401.
 
-These can be configured via environment variables. See [application.conf](src/main/resources/application.conf) for 
+The application can be configured via environment variables. See [application.conf](src/main/resources/application.conf) for 
 configuration options.
