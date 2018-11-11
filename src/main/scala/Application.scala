@@ -16,7 +16,7 @@ trait Application extends LazyLogging {
   private val healthttpd = bind[Healthttpd]
   private val placesLoader = bind[PlacesLoader]
 
-  def run: Unit = {
+  def run(): Unit = {
     healthttpd.startAndIndicateNotReady()
 
     val places = Await.result(placesLoader.load().runAsync, 1 minute)

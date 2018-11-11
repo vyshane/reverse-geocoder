@@ -21,7 +21,7 @@ object Main extends App with LazyLogging {
       .bind[Healthttpd].toInstance(Healthttpd(config.statusPort))
       .bind[LinesFileReader].toInstance(fileReader)
       .noLifeCycleLogging
-      .withSession(_.build[Application].run)
+      .withSession(_.build[Application].run())
 
     lazy val fileReader: LinesFileReader = () => {
       logger.info(s"Loading places from ${config.placesFilePath}")
