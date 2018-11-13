@@ -7,6 +7,7 @@ resolvers += Resolver.bintrayRepo("beyondthelines", "maven")
 resolvers += Resolver.bintrayRepo("vyshane", "maven")
 
 libraryDependencies ++= Seq(
+  "org.scala-lang.modules" %% "scala-java8-compat" % "0.9.0",
   // Configuration
   "com.github.pureconfig" %% "pureconfig" % "0.9.2",
   // Dependency Injection
@@ -25,6 +26,8 @@ libraryDependencies ++= Seq(
   "mu.node" %% "healthttpd" % "0.1.0",
   // K-d Tree
   "com.thesamet" %% "kdtree" % "1.0.5",
+  // Sunrise and sunset calculations
+  "net.time4j" % "time4j-base" % "5.0",
   // Logging
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0",

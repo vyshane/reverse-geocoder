@@ -40,15 +40,17 @@ class GrpcServerIntegrationSpec extends AsyncWordSpec with Matchers with AsyncMo
   "The reverse-geocoder gRPC server" when {
     "a request is sent to reverse geocode a location" should {
       "send a response back" in {
+        val response = ReverseGeocodeLocationResponse()
+
         (reverseGeocoderService.reverseGeocodeLocation _)
           .expects(*)
-          .returns(Task.now(ReverseGeocodeLocationResponse()))
+          .returns(Task.now(response))
 
         reverseGeocoderClient
           .reverseGeocodeLocation(ReverseGeocodeLocationRequest(0, 0))
           .runAsync
           .map { result =>
-            result shouldEqual ReverseGeocodeLocationResponse()
+            result shouldEqual response
           }
       }
     }

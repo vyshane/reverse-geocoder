@@ -4,6 +4,8 @@ syntax = "proto3";
 
 package mu.node.reversegeocoder;
 
+import "google/protobuf/timestamp.proto";
+
 service ReverseGeocoder {
     rpc ReverseGeocodeLocation (ReverseGeocodeLocationRequest) returns (ReverseGeocodeLocationResponse) {};
 }
@@ -26,4 +28,6 @@ message Place {
     uint32 elevation_meters = 5;
     string timezone = 6;
     uint64 population = 7;
+    google.protobuf.Timestamp sunrise_today = 8;
+    google.protobuf.Timestamp sunset_today = 9;
 }
