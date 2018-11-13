@@ -12,13 +12,13 @@ import net.time4j.PlainDate
 import net.time4j.calendar.astro.{SolarTime, StdSolarCalculator}
 import org.scalatest.{AsyncWordSpec, Matchers}
 
-class ReverseGeocoderServiceSpec extends AsyncWordSpec with Matchers {
+class ReverseGeocodeLocationRpcSpec extends AsyncWordSpec with Matchers {
 
   "ReverseGeocoderService" when {
     "asked to reverse geocode a location it can't find" should {
       "return an empty response" in {
-        val reverseGeocodeService = new ReverseGeocoderService(KDTreeMap(), Observable.empty)
-        reverseGeocodeService.reverseGeocodeLocation(ReverseGeocodeLocationRequest(0, 0)).runAsync map { r =>
+        val rpc = new ReverseGeocodeLocationRpc(KDTreeMap(), Observable.empty)
+        rpc.handle(ReverseGeocodeLocationRequest(0, 0)).runAsync map { r =>
           r shouldEqual ReverseGeocodeLocationResponse()
         }
       }
@@ -48,16 +48,14 @@ class ReverseGeocoderServiceSpec extends AsyncWordSpec with Matchers {
           sunsetToday = Some(Timestamp(sunset.getPosixTime, sunset.getNanosecond))
         )
 
-        val reverseGeocodeService = new ReverseGeocoderService(
+        val rpc = new ReverseGeocodeLocationRpc(
           KDTreeMap(
             (perthLatitude, perthLongitude) -> perth,
             (-20.26381, 57.4791) -> Place(name = "Quatre Bornes", countryCode = "MU")
           ),
           Observable(now)
         )
-        reverseGeocodeService
-          .reverseGeocodeLocation(ReverseGeocodeLocationRequest(-30, 100))
-          .runAsync map { r =>
+        rpc.handle(ReverseGeocodeLocationRequest(-30, 100)).runAsync map { r =>
           r shouldEqual ReverseGeocodeLocationResponse(Option(perth))
         }
       }

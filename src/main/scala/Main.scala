@@ -32,6 +32,7 @@ object Main extends App with LazyLogging {
       .bind[KDTreeMap[Location, Place]].toEagerSingletonProvider(loadPlacesBlocking)
 
       // Startup
+      .withProductionMode
       .noLifeCycleLogging
       .withSession(_.build[Application].run())
 
