@@ -3,7 +3,7 @@
 package mu.node.reversegeocoder
 
 import java.io.{BufferedReader, FileInputStream, InputStreamReader}
-import java.time.ZonedDateTime
+import java.time.Instant
 
 import com.thesamet.spatial.KDTreeMap
 import com.typesafe.scalalogging.LazyLogging
@@ -49,10 +49,10 @@ object Main extends App with LazyLogging {
       Await.result(loader.load().runAsync, 1 minute)
     }
 
-    lazy val clock: Clock = zoneId => {
+    lazy val clock: Clock = {
       Observable
         .interval(1 second)
-        .map(_ => ZonedDateTime.now(zoneId))
+        .map(_ => Instant.now())
     }
   }
 }

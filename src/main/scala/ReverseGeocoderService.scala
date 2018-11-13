@@ -2,11 +2,12 @@
 
 package mu.node.reversegeocoder
 
-import java.time.{ZoneId, ZonedDateTime}
+import java.time.{Instant, ZoneId, ZonedDateTime}
 
 import com.google.protobuf.timestamp.Timestamp
 import com.thesamet.spatial.KDTreeMap
 import monix.eval.Task
+import monix.reactive.Observable
 import mu.node.reversegeocoder.ReverseGeocoderGrpcMonix.ReverseGeocoder
 import net.time4j.{Moment, PlainDate}
 import net.time4j.calendar.astro.{SolarTime, StdSolarCalculator}
@@ -17,6 +18,7 @@ class ReverseGeocoderService(places: KDTreeMap[Location, Place], clock: Clock) e
 
   override def reverseGeocodeLocation(request: ReverseGeocodeLocationRequest): Task[ReverseGeocodeLocationResponse] = {
     findNearest(request.latitude, request.longitude)(places)
+      .map(Task.now(_))
       .map(addSunTimes(_, clock).map(toResponse))
       .getOrElse(emptyTaskResponse)
   }
@@ -30,12 +32,11 @@ class ReverseGeocoderService(places: KDTreeMap[Location, Place], clock: Clock) e
 
   private case class Sun(rise: Option[Timestamp], set: Option[Timestamp])
 
-  private def addSunTimes(place: Place, clock: Clock): Task[Place] = {
-    val time = clock(ZoneId.of(place.timezone)).firstL
-
-    Task.zip2(Task.now(place), time).map {
+  private def addSunTimes(place: Task[Place], clock: Clock): Task[Place] = {
+    Task.zip2(place, clock.firstL).map {
       case (p, t) =>
-        val sun = calculateSun(p.latitude, p.longitude, p.elevationMeters, t)
+        val zonedDateTime = t.atZone(ZoneId.of(p.timezone))
+        val sun = calculateSun(p.latitude, p.longitude, p.elevationMeters, zonedDateTime)
         p.copy(sunriseToday = sun.rise, sunsetToday = sun.set)
     }
   }

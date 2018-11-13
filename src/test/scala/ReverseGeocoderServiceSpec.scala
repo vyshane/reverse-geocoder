@@ -2,7 +2,7 @@
 
 package mu.node.reversegeocoder
 
-import java.time.{ZoneId, ZonedDateTime}
+import java.time.{Instant, ZoneId}
 
 import com.google.protobuf.timestamp.Timestamp
 import com.thesamet.spatial.KDTreeMap
@@ -10,15 +10,14 @@ import monix.execution.Scheduler.Implicits.global
 import monix.reactive.Observable
 import net.time4j.PlainDate
 import net.time4j.calendar.astro.{SolarTime, StdSolarCalculator}
-import org.scalamock.scalatest.AsyncMockFactory
 import org.scalatest.{AsyncWordSpec, Matchers}
 
-class ReverseGeocoderServiceSpec extends AsyncWordSpec with Matchers with AsyncMockFactory {
+class ReverseGeocoderServiceSpec extends AsyncWordSpec with Matchers {
 
   "ReverseGeocoderService" when {
     "asked to reverse geocode a location it can't find" should {
       "return an empty response" in {
-        val reverseGeocodeService = new ReverseGeocoderService(KDTreeMap(), mock[Clock])
+        val reverseGeocodeService = new ReverseGeocoderService(KDTreeMap(), Observable.empty)
         reverseGeocodeService.reverseGeocodeLocation(ReverseGeocodeLocationRequest(0, 0)).runAsync map { r =>
           r shouldEqual ReverseGeocodeLocationResponse()
         }
@@ -26,16 +25,13 @@ class ReverseGeocoderServiceSpec extends AsyncWordSpec with Matchers with AsyncM
     }
     "asked to reverse geocode a location it can find" should {
       "find the nearest place and calculate the sunrise and sunset times at that place" in {
+        val now = Instant.now()
         val perthZoneId = ZoneId.of("Australia/Perth")
-        val perthTime = ZonedDateTime.now(perthZoneId)
         val perthLatitude = -31.9505
         val perthLongitude = 115.8605
         val perthElevation = 32
 
-        val clock = mockFunction[ZoneId, Observable[ZonedDateTime]]
-        clock.expects(perthZoneId).returns(Observable(perthTime))
-
-        val perthDate = PlainDate.from(perthTime.toLocalDate)
+        val perthDate = PlainDate.from(now.atZone(perthZoneId).toLocalDate)
         val solarTime = SolarTime.ofLocation(perthLatitude, perthLongitude, perthElevation, StdSolarCalculator.TIME4J)
         val sunrise = solarTime.sunrise().apply(perthDate).get
         val sunset = solarTime.sunset().apply(perthDate).get
@@ -57,7 +53,7 @@ class ReverseGeocoderServiceSpec extends AsyncWordSpec with Matchers with AsyncM
             (perthLatitude, perthLongitude) -> perth,
             (-20.26381, 57.4791) -> Place(name = "Quatre Bornes", countryCode = "MU")
           ),
-          clock
+          Observable(now)
         )
         reverseGeocodeService
           .reverseGeocodeLocation(ReverseGeocodeLocationRequest(-30, 100))

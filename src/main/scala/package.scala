@@ -2,7 +2,7 @@
 
 package mu.node
 
-import java.time.{ZoneId, ZonedDateTime}
+import java.time.Instant
 
 import monix.reactive.Observable
 
@@ -11,5 +11,5 @@ package object reversegeocoder {
   type Longitude = Double
   type Location = (Latitude, Longitude)
   type LinesFileReader = () => Observable[String]
-  type Clock = (ZoneId) => Observable[ZonedDateTime]
+  type Clock = Observable[Instant]
 }
