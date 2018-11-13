@@ -31,12 +31,14 @@ message Place {
     uint32 elevation_meters = 5;
     string timezone = 6;
     uint64 population = 7;
+    google.protobuf.Timestamp sunrise_today = 8;
+    google.protobuf.Timestamp sunset_today = 9;
 }
 ```
 
 ## Building
 
-```shell
+```text
 make docker
 ```
 
@@ -44,13 +46,60 @@ By default, the Docker image will download and use the [cities500.zip](http://do
 
 ## Running
 
-```shell
-docker run vyshane/reverse-geocoder
+The easiest way to run reverse-geocoder is using Docker:
+
+```text
+docker run -d vyshane/reverse-geocoder
 ```
 
-By default the application will serve the reverse geocoder gRPC service over port 8080.
+You then can make a test request to the service using [grpcurl](https://github.com/fullstorydev/grpcurl). The application serves the reverse geocoder gRPC service on port 8080.
 
-It will also report health and readiness via HTTP, at /health and /readiness respectively, on port 3401.
+```text
+grpcurl -plaintext \
+    -proto src/main/protobuf/reverse-geocoder.proto \
+    -d '{"latitude": -20.2664803, "longitude": 57.4679569}' \
+    localhost:8080 \
+    mu.node.reversegeocoder.ReverseGeocoder/ReverseGeocodeLocation
+```
 
-The application can be configured via environment variables. See [application.conf](src/main/resources/application.conf) for 
-configuration options.
+Sample output of above call, in JSON format:
+
+```JSON
+{
+  "place": {
+    "name": "Quatre Bornes",
+    "countryCode": "MU",
+    "latitude": -20.26381,
+    "longitude": 57.4791,
+    "timezone": "Indian/Mauritius",
+    "population": 80961,
+    "sunriseToday": "2018-11-13T01:23:08Z",
+    "sunsetToday": "2018-11-13T14:25:42Z"
+  }
+}
+```
+
+### Health and Readiness Status
+
+reverse-geocoder will report health and readiness on port 3401 via HTTP, at /health and /readiness respectively. You can poll /readiness during startup to know when reverse-geocoder is ready to be added to your load balancer.
+
+```text
+❱ curl -i http://localhost:3401/readiness                                                                                                                                                                                              master 
+HTTP/1.1 200 OK 
+Content-Type: text/html; charset=utf-8
+Date: Tue, 13 Nov 2018 13:48:52 GMT
+Connection: keep-alive
+Content-Length: 5
+
+Ready%
+```
+
+## Configuration
+
+reverse-geocoder can be configured through the following environment variables.
+
+| Environment Variable | Default Value |
+| -------------------- | ------------- |
+| GRPC_PORT            | 8080          |
+| STATUS_PORT          | 3401          |
+| PLACES_FILE_PATH     | N/A           |
