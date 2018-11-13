@@ -2,12 +2,11 @@
 
 package mu.node.reversegeocoder
 
-import java.time.{Instant, ZoneId, ZonedDateTime}
+import java.time.{ZoneId, ZonedDateTime}
 
 import com.google.protobuf.timestamp.Timestamp
 import com.thesamet.spatial.KDTreeMap
 import monix.eval.Task
-import monix.reactive.Observable
 import mu.node.reversegeocoder.ReverseGeocoderGrpcMonix.ReverseGeocoder
 import net.time4j.{Moment, PlainDate}
 import net.time4j.calendar.astro.{SolarTime, StdSolarCalculator}
