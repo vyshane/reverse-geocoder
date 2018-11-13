@@ -16,24 +16,29 @@ import scala.compat.java8.OptionConverters._
 class ReverseGeocoderService(places: KDTreeMap[Location, Place], clock: Clock) extends ReverseGeocoder {
 
   override def reverseGeocodeLocation(request: ReverseGeocodeLocationRequest): Task[ReverseGeocodeLocationResponse] = {
+    findNearest(request.latitude, request.longitude)(places)
+      .map(addSunTimes(_, clock).map(toResponse))
+      .getOrElse(emptyTaskResponse)
+  }
+
+  private def findNearest(latitude: Latitude, longitude: Longitude)(places: KDTreeMap[Location, Place]): Option[Place] = {
     places
-      .findNearest((request.latitude, request.longitude), 1)
+      .findNearest((latitude, longitude), 1)
       .headOption
       .map(_._2)
-      .map(place => {
-        val now = clock(ZoneId.of(place.timezone)).firstL
-
-        Task.zip2(Task.now(place), now).map {
-          case (p, n) =>
-            val sun = calculateSun(p.latitude, p.longitude, p.elevationMeters, n)
-            val placeWithSun = p.copy(sunriseToday = sun.rise, sunsetToday = sun.set)
-            ReverseGeocodeLocationResponse(Some(placeWithSun))
-        }
-      })
-      .getOrElse(Task.now(ReverseGeocodeLocationResponse.defaultInstance))
   }
 
   private case class Sun(rise: Option[Timestamp], set: Option[Timestamp])
+
+  private def addSunTimes(place: Place, clock: Clock): Task[Place] = {
+    val time = clock(ZoneId.of(place.timezone)).firstL
+
+    Task.zip2(Task.now(place), time).map {
+      case (p, t) =>
+        val sun = calculateSun(p.latitude, p.longitude, p.elevationMeters, t)
+        p.copy(sunriseToday = sun.rise, sunsetToday = sun.set)
+    }
+  }
 
   private def calculateSun(latitude: Latitude,
                            longitude: Longitude,
@@ -46,4 +51,10 @@ class ReverseGeocoderService(places: KDTreeMap[Location, Place], clock: Clock) e
     val set = solarTime.sunset().apply(calendarDate).asScala.map(toTimestamp)
     Sun(rise, set)
   }
+
+  private def toResponse(place: Place): ReverseGeocodeLocationResponse = {
+    ReverseGeocodeLocationResponse(Some(place))
+  }
+
+  private val emptyTaskResponse = Task.now(ReverseGeocodeLocationResponse.defaultInstance)
 }
