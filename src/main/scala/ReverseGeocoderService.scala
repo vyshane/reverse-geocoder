@@ -43,9 +43,9 @@ class ReverseGeocoderService(places: KDTreeMap[Location, Place], clock: Clock) e
   private def calculateSun(latitude: Latitude,
                            longitude: Longitude,
                            altitudeMeters: Int,
-                           currentDate: ZonedDateTime): Sun = {
+                           zonedDateTime: ZonedDateTime): Sun = {
     val solarTime = SolarTime.ofLocation(latitude, longitude, altitudeMeters, StdSolarCalculator.TIME4J)
-    val calendarDate = PlainDate.from(currentDate.toLocalDate)
+    val calendarDate = PlainDate.from(zonedDateTime.toLocalDate)
     def toTimestamp(moment: Moment) = Timestamp(moment.getPosixTime, moment.getNanosecond())
     val rise = solarTime.sunrise().apply(calendarDate).asScala.map(toTimestamp)
     val set = solarTime.sunset().apply(calendarDate).asScala.map(toTimestamp)
