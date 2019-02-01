@@ -23,7 +23,7 @@ object Main extends App with LazyLogging {
       .bind[Config].toInstance(config)
       .bind[Healthttpd].toInstance(Healthttpd(config.statusPort))
       .bind[FileReader[Task]].toInstance(new FileReaderInterpreter)
-      .bind[PlacesLoaderInterpreter[Task]].toInstance(new PlacesLoaderInterpreter(new FileReaderInterpreter))
+      .bind[PlacesLoaderInterpreter[Task]].toEagerSingletonProvider(placesLoaderProvider)
       .bind[Clock[Task]].toInstance(new ClockInterpreter)
 
       // Load places from disk immediately upon startup
@@ -35,6 +35,10 @@ object Main extends App with LazyLogging {
       .withSession(_.build[Application].run())
 
     // Side effects are injected at the edge:
+
+    lazy val placesLoaderProvider: FileReader[Task] => PlacesLoaderInterpreter[Task] = { fileReader =>
+      new PlacesLoaderInterpreter(fileReader)
+    }
 
     lazy val loadPlacesBlocking: PlacesLoaderInterpreter[Task] => KDTreeMap[Location, Place] = { loader =>
       Await.result(loader.load(config.placesFilePath).runAsync, 1 minute)

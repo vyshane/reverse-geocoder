@@ -4,19 +4,20 @@ package mu.node.reversegeocoder
 
 import java.time.{ZoneId, ZonedDateTime}
 
+import cats.Monad
+import cats.implicits._
 import com.google.protobuf.timestamp.Timestamp
 import com.thesamet.spatial.KDTreeMap
-import monix.eval.Task
 import net.time4j.{Moment, PlainDate}
 import net.time4j.calendar.astro.{SolarTime, StdSolarCalculator}
 
 import scala.compat.java8.OptionConverters._
 
-class ReverseGeocodeLocationRpc(places: KDTreeMap[Location, Place], clock: Clock[Task], config: Config) {
+class ReverseGeocodeLocationRpc[F[_]: Monad](places: KDTreeMap[Location, Place], clock: Clock[F], config: Config) {
 
-  def handle(request: ReverseGeocodeLocationRequest): Task[ReverseGeocodeLocationResponse] = {
+  def handle(request: ReverseGeocodeLocationRequest): F[ReverseGeocodeLocationResponse] = {
     findNearest(request.latitude, request.longitude)(places)
-      .map(Task.now(_))
+      .map(p => Monad[F].pure(p))
       .map(addSunTimes(_, clock).map(toResponse))
       .getOrElse(emptyTaskResponse)
   }
@@ -30,13 +31,14 @@ class ReverseGeocodeLocationRpc(places: KDTreeMap[Location, Place], clock: Clock
 
   private case class Sun(rise: Option[Timestamp], set: Option[Timestamp])
 
-  private def addSunTimes(place: Task[Place], clock: Clock[Task]): Task[Place] = {
-    Task.zip2(place, clock.now()).map {
-      case (p, t) =>
-        val zonedDateTime = t.atZone(ZoneId.of(p.timezone))
-        val sun = calculateSun(p.latitude, p.longitude, p.elevationMeters, zonedDateTime)
-        p.copy(sunriseToday = sun.rise, sunsetToday = sun.set)
-    }
+  private def addSunTimes(place: F[Place], clock: Clock[F]): F[Place] = {
+    for {
+      p <- place
+      c <- clock.now()
+      dt = c.atZone(ZoneId.of(p.timezone))
+      sun = calculateSun(p.latitude, p.longitude, p.elevationMeters, dt)
+      placeWithSun = p.copy(sunriseToday = sun.rise, sunsetToday = sun.set)
+    } yield (placeWithSun)
   }
 
   private def calculateSun(latitude: Latitude,
@@ -55,5 +57,5 @@ class ReverseGeocodeLocationRpc(places: KDTreeMap[Location, Place], clock: Clock
     ReverseGeocodeLocationResponse(Some(place))
   }
 
-  private val emptyTaskResponse = Task.now(ReverseGeocodeLocationResponse.defaultInstance)
+  private val emptyTaskResponse = Monad[F].pure(ReverseGeocodeLocationResponse.defaultInstance)
 }
